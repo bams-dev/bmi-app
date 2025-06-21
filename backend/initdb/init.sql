@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS patients (
+  id SERIAL PRIMARY KEY,
+  poids FLOAT NOT NULL,
+  taille FLOAT NOT NULL,
+  imc FLOAT NOT NULL
+);
