@@ -1,6 +1,9 @@
 version: '3.8'
 
 services:
+  ####################
+  # FRONTEND React
+  ####################
   frontend:
     build: ./frontend
     ports:
@@ -8,6 +11,9 @@ services:
     depends_on:
       - backend
 
+  ####################
+  # BACKEND Flask
+  ####################
   backend:
     build: ./backend
     ports:
@@ -20,6 +26,9 @@ services:
       - POSTGRES_USER=bmiuser
       - POSTGRES_PASSWORD=bmipass
 
+  ####################
+  # DATABASE PostgreSQL
+  ####################
   db:
     image: postgres:13
     environment:
@@ -29,6 +38,40 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./backend/initdb:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  ####################
+  # INTERFACE pgAdmin
+  ####################
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: bambainza91@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: azerty
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  ####################
+  # CI/CD Jenkins
+  ####################
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
 
 volumes:
   db_data:
+  pgadmin_data:
+  jenkins_home:
